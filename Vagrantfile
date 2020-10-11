@@ -1,6 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+k8sVersion = '1.15.7'
 servers = [
     {
         :name => "k8s-head",
@@ -81,7 +82,7 @@ EOF'
     deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
     apt-get update
-    apt-get install -y kubelet=1.15.7-00 kubeadm=1.15.7-00 kubectl=1.15.7-00
+    apt-get install -y kubelet=#{k8sVersion}-00 kubeadm=#{k8sVersion}-00 kubectl=#{k8sVersion}-00
     apt-mark hold kubelet kubeadm kubectl
     # kubelet requires swap off
     swapoff -a
@@ -102,7 +103,7 @@ $configureMaster = <<-SCRIPT
     IP_ADDR=`ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:`
     # install k8s master
     HOST_NAME=$(hostname -s)
-    kubeadm init --image-repository registry.aliyuncs.com/google_containers  --kubernetes-version v1.15.7 \
+    kubeadm init --image-repository registry.aliyuncs.com/google_containers  --kubernetes-version v#{k8sVersion} \
     --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
     #copying credentials to regular user - vagrant
     sudo --user=vagrant mkdir -p /home/vagrant/.kube
